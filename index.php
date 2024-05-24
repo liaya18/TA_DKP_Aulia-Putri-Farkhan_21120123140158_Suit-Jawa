@@ -95,38 +95,46 @@ function processGame() {
     }
 
     array_push($_SESSION['resultQueue'], $hasil);
-    
-    if (count($_SESSION['resultQueue']) > 5) {
-        array_shift($_SESSION['resultQueue']);
+
+if (count($_SESSION['resultQueue']) > 5) {
+    array_shift($_SESSION['resultQueue']);
+}
+
+$_SESSION['gameCount']++;
+
+echo "<div>";
+echo "<h2>Pilihan Anda: " . $pilihan[$pilihanPengguna-1] . "</h2>";
+echo "<h2>Pilihan Komputer: " . $pilihan[$pilihanKomputer-1] . "</h2>";
+echo "<h2>Hasil: $hasil</h2>";
+echo "</div>";
+
+echo "<div>";
+echo "<h2>Riwayat Permainan (Stack)</h2>";
+foreach (array_reverse($_SESSION['historyStack']) as $index => $choice) {
+    echo "<p>Permainan " . ($index + 1) . ": Anda memilih " . $pilihan[$choice['user'] - 1] . ", Komputer memilih " . $pilihan[$choice['computer'] - 1] . "</p>";
+}
+echo "</div>";
+
+echo "<div>";
+echo "<h2>Hasil Terakhir (Queue)</h2>";
+foreach ($_SESSION['resultQueue'] as $index => $result) {
+    echo "<p>Hasil " . ($index + 1) . ": $result</p>";
+}
+echo "</div>";
+
+if ($_SESSION['gameCount'] >= 3) {
+    $wins = count(array_filter($_SESSION['currentRoundResults'], fn($result) => $result === 'Menang'));
+    $losses = 3 - $wins;
+
+    echo "<div>";
+    if ($wins > $losses) {
+        echo "<p>Selamat Anda menang ronde ini!</p>";
+    } else {
+        echo "<p>Anda kalah ronde ini. Coba lagi!</p>";
     }
-    
-    $_SESSION['gameCount']++;
+    echo "</div>";
 
-    echo "<h2>Pilihan Anda: " . $pilihan[$pilihanPengguna-1] . "</h2>";
-    echo "<h2>Pilihan Komputer: " . $pilihan[$pilihanKomputer-1] . "</h2>";
-    echo "<h2>Hasil: $hasil</h2>";
-
-    echo "<h2>Riwayat Permainan (Stack)</h2>";
-    foreach (array_reverse($_SESSION['historyStack']) as $index => $choice) {
-        echo "<p>Permainan " . ($index + 1) . ": Anda memilih " . $pilihan[$choice['user'] - 1] . ", Komputer memilih " . $pilihan[$choice['computer'] - 1] . "</p>";
-    }
-
-    echo "<h2>Hasil Terakhir (Queue)</h2>";
-    foreach ($_SESSION['resultQueue'] as $index => $result) {
-        echo "<p>Hasil " . ($index + 1) . ": $result</p>";
-    }
-
-    if ($_SESSION['gameCount'] >= 3) {
-        $wins = count(array_filter($_SESSION['currentRoundResults'], fn($result) => $result === 'Menang'));
-        $losses = 3 - $wins;
-
-        if ($wins > $losses) {
-            echo "<p>Selamat Anda menang ronde ini!</p>";
-        } else {
-            echo "<p>Anda kalah ronde ini. Coba lagi!</p>";
-        }
-
-        resetRound();
+    resetRound();
     }
 }
 
